@@ -1,8 +1,7 @@
 using UnityEngine;
 
-public class EnemyTank : MonoBehaviour
+public class EnemyTank : EnemyBase
 {
-    public float moveSpeed = 2f;
     public float stopDistance = 3.5f;
     public float shootCooldown = 2f;
 
@@ -10,61 +9,53 @@ public class EnemyTank : MonoBehaviour
     public Transform firePoint;
     public Transform turret;
 
-    private Transform player;
     private float shootTimer;
 
-    // Movement wobble
-    public float strafeFrequency = 2f;
-    public float strafeAmplitude = 1f;
-
-    void Start()
+    protected override void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        base.Start(); // Call base EnemyBase.Start()
+        
+        switch (DifficultyManager.CurrentDifficulty)
+        {
+            case Difficulty.Easy:
+                speed = 0.5f;
+                shootCooldown = 2f;
+                break;
+            case Difficulty.Normal:
+                speed = 2f;
+                shootCooldown = 2f;
+                break;
+            case Difficulty.Hard:
+                speed = 3f;
+                shootCooldown = 1f;
+                break;
+        }
+
         shootTimer = shootCooldown;
     }
 
-    void Update()
+    protected override void Move()
     {
-        if (player == null)
-        {
-            player = GameObject.FindGameObjectWithTag("Player")?.transform;
-            return;
-        }
+        if (player == null) return;
 
         float distance = Vector2.Distance(transform.position, player.position);
-
         if (distance > stopDistance)
         {
-            MoveTowardPlayerWithStrafe();
+            Vector2 direction = (player.position - transform.position).normalized;
+            transform.position += (Vector3)(direction * speed * Time.deltaTime);
         }
 
         RotateTurret();
+    }
 
+    protected override void Attack()
+    {
         shootTimer -= Time.deltaTime;
         if (shootTimer <= 0f)
         {
             Shoot();
             shootTimer = shootCooldown;
         }
-    }
-
-    void MoveTowardPlayerWithStrafe()
-    {
-        Vector2 toPlayer = (player.position - transform.position).normalized;
-
-        // Add strafe using sine wave
-        Vector2 strafe = Vector2.Perpendicular(toPlayer) * Mathf.Sin(Time.time * strafeFrequency) * strafeAmplitude;
-        Vector2 desiredDirection = (toPlayer + strafe).normalized;
-
-        // Obstacle avoidance
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, desiredDirection, 1f);
-        if (hit.collider != null && hit.collider.gameObject.CompareTag("Wall"))
-        {
-            // Avoid by turning slightly left
-            desiredDirection = Quaternion.Euler(0, 0, 45) * desiredDirection;
-        }
-
-        transform.position += (Vector3)(desiredDirection * moveSpeed * Time.deltaTime);
     }
 
     void RotateTurret()
@@ -82,10 +73,22 @@ public class EnemyTank : MonoBehaviour
         if (bulletPrefab == null || firePoint == null) return;
 
         GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
-        Bullet bulletScript = bullet.GetComponent<Bullet>();
+        MainSceneBullet bulletScript = bullet.GetComponent<MainSceneBullet>();
+
         if (bulletScript != null)
         {
-            bulletScript.shooterTag = "Enemy";
+            switch (DifficultyManager.CurrentDifficulty)
+            {
+                case Difficulty.Easy:
+                    bulletScript.bulletSpeed = 3f;
+                    break;
+                case Difficulty.Normal:
+                    bulletScript.bulletSpeed = 5f;
+                    break;
+                case Difficulty.Hard:
+                    bulletScript.bulletSpeed = 7f;
+                    break;
+            }
         }
 
         Debug.Log("💥 EnemyTank fired!");

@@ -3,23 +3,34 @@ using UnityEngine.SceneManagement;
 
 public class TankHealth : MonoBehaviour
 {
+    [Header("Health Settings")]
     public int maxHealth = 3;
     private int currentHealth;
 
+    [Header("Player Settings")]
     public bool isPlayer = false;
+
+    [Header("UI Elements")]
+    public SpriteRenderer[] healthSegments;
 
     void Start()
     {
         currentHealth = maxHealth;
-        Debug.Log($"{gameObject.name} HP: {maxHealth}");
+        UpdateHealthBar();
+        Debug.Log($"{gameObject.name} HP initialized to {currentHealth}");
     }
 
     public void TakeDamage(int amount)
     {
-        currentHealth -= amount;
-        Debug.Log($"{gameObject.name} took damage. HP: {currentHealth}");
+        if (currentHealth <= 0) return;
 
-        if (currentHealth <= 0)
+        currentHealth -= amount;
+        currentHealth = Mathf.Max(currentHealth, 0);
+        UpdateHealthBar();
+
+        Debug.Log($"{gameObject.name} took {amount} damage. Remaining HP: {currentHealth}");
+
+        if (currentHealth == 0)
         {
             Die();
         }
@@ -28,21 +39,31 @@ public class TankHealth : MonoBehaviour
     public void ResetHealth()
     {
         currentHealth = maxHealth;
+        UpdateHealthBar();
         Debug.Log($"{gameObject.name} health reset to {maxHealth}");
     }
 
-    void Die()
+    private void Die()
     {
         if (isPlayer)
         {
             Debug.Log("☠ Player died. Reloading scene...");
-            
-            Time.timeScale = 1f; // Make absolutely sure game isn't paused
+            Time.timeScale = 1f;
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
         else
         {
             Destroy(gameObject);
+        }
+    }
+
+    private void UpdateHealthBar()
+    {
+        if (healthSegments == null || healthSegments.Length == 0) return;
+
+        for (int i = 0; i < healthSegments.Length; i++)
+        {
+            healthSegments[i].color = (i < currentHealth) ? Color.green : Color.red;
         }
     }
 }

@@ -12,13 +12,13 @@ public class HouseVictoryManager : MonoBehaviour
     {
         if (levelEnded) return;
 
-        if (playerHouse == null)
+        if (enemyHouse == null)
         {
             Debug.Log("🏚️ Player's House destroyed! Restarting level...");
             levelEnded = true;
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
-        else if (enemyHouse == null)
+        else if (playerHouse == null)
         {
             Debug.Log("🎯 Enemy House destroyed by Player! Advancing to next level...");
             levelEnded = true;

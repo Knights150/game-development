@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3782401630571812606}
   - component: {fileID: 4321628099465129445}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: TankTurret
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1535005839074517490}
   - component: {fileID: 3882061288346421439}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: TankBase
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -189,7 +189,7 @@ GameObject:
   - component: {fileID: 5382137472066598171}
   - component: {fileID: 7215718479375593647}
   - component: {fileID: -1535023364698492694}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: EnemyTankHouseShooter
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -298,14 +298,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 070fea67c85ff444d8fb33118e6a6226, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 2
+  maxHealth: 5
+  player: {fileID: 0}
+  speed: 2
   stopDistance: 3.5
   shootCooldown: 2
   bulletPrefab: {fileID: 822817755577132885, guid: 78401193070172d4da99bafd2849754b, type: 3}
   firePoint: {fileID: 2643536288628155210}
   turret: {fileID: 3782401630571812606}
-  strafeFrequency: 2
-  strafeAmplitude: 1
 --- !u!114 &7215718479375593647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -320,6 +320,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 10
   isPlayer: 0
+  healthSegments: []
 --- !u!212 &-1535023364698492694
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -384,7 +385,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2643536288628155210}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: FirePoint
   m_TagString: Enemy
   m_Icon: {fileID: 0}

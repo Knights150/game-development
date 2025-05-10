@@ -3,17 +3,23 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerTank : MonoBehaviour
 {
-    public float moveSpeed = 45f;
+    public float moveSpeed = 15f;
     public GameObject bulletPrefab;
     public Transform firePoint;
 
     private Rigidbody2D rb;
     private Vector2 moveDirection;
+    private AudioSource audioSource;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        Debug.Log("✅ PlayerTank Start() called on " + gameObject.name);
+        audioSource = GetComponent<AudioSource>();
+
+        if (audioSource == null)
+            Debug.LogWarning("🔇 AudioSource missing on PlayerTank!");
+        else if (audioSource.clip == null)
+            Debug.LogWarning("🎵 AudioSource has no AudioClip assigned!");
     }
 
     void Update()
@@ -24,7 +30,6 @@ public class PlayerTank : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.Log("🔫 Space pressed — attempting to shoot");
             Shoot();
         }
     }
@@ -32,16 +37,15 @@ public class PlayerTank : MonoBehaviour
     void FixedUpdate()
     {
         rb.linearVelocity = moveDirection * moveSpeed;
-
-        if (moveDirection != Vector2.zero)
-            Debug.Log("🚗 Moving in direction: " + moveDirection);
     }
 
     void Shoot()
     {
+        Debug.Log("🚀 Shoot() called");
+
         if (bulletPrefab == null || firePoint == null)
         {
-            Debug.LogWarning("⚠ Missing bulletPrefab or firePoint on PlayerTank!");
+            Debug.LogWarning("⚠ Missing bulletPrefab or firePoint");
             return;
         }
 
@@ -51,11 +55,16 @@ public class PlayerTank : MonoBehaviour
         if (bulletScript != null)
         {
             bulletScript.shooterTag = "Player";
-            Debug.Log("🎯 Bullet instantiated and tagged as Player");
+        }
+
+        if (audioSource != null)
+        {
+            Debug.Log("🔊 Playing shooting sound");
+            audioSource.Play();
         }
         else
         {
-            Debug.LogWarning("⚠ Bullet prefab missing Bullet.cs script!");
+            Debug.LogWarning("🔇 No AudioSource found on PlayerTank");
         }
     }
 }
